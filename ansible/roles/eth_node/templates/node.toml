@@ -1,0 +1,9 @@
+[parity]
+chain = "/tmp/spec.json"
+base_path = "/tmp/parity"
+[network]
+port = {{ node_port }}
+[rpc]
+port = {{ rpc_port }}
+apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts"]
+interface = "all"

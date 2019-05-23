@@ -1,0 +1,31 @@
+---
+- set_fact:
+    authority_list: '{{ hostvars["localhost"].authority_list | default([])}}'
+
+- name: Template configs
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+  with_items:
+    - src: node.toml
+      dest: /tmp/node.toml
+    - src: spec.json.j2
+      dest: /tmp/spec.json
+
+- name: Restart parity docker
+  import_tasks: restart_parity_docker.yml
+
+- name: Create account
+  vars:
+    create_account_json: "{{ lookup('template', 'create_account_payload.json') | to_json }}"
+    command: "curl --data '{{ create_account_json }}' -H \"Content-Type: application/json\" -X POST localhost:{{ rpc_port }}"
+  command: '{{ command }}'
+  register: responce
+
+- name: Get address
+  set_fact:
+    new_account: '{{ (responce.stdout | from_json)["result"] }}'
+
+- name: Show account
+  debug:
+    var: new_account

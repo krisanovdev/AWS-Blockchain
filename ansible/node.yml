@@ -1,0 +1,5 @@
+---
+- hosts: 'node_*'
+  tasks:
+  - import_role:
+      name: eth_node

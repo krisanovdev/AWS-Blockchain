@@ -1,0 +1,44 @@
+---
+- name: Create base node
+  import_tasks: create_node.yml
+
+- name: Print new account
+  debug:
+    var: new_account
+
+- name: Combine authority_list
+  delegate_to: localhost
+  delegate_facts: true
+  set_fact:
+    authority_list: '{{ [hostvars[groups["node_0"][0]].new_account] + [hostvars[groups["node_1"][0]].new_account] }}'
+
+- set_fact:
+    authority_list: '{{ hostvars["localhost"].authority_list }}'
+
+- name: Show authorities list
+  debug:
+    var: authority_list
+
+- name: Retemplate spec
+  template:
+    src: spec.json.j2
+    dest: /tmp/spec.json
+
+- name: Template pass
+  template:
+    src: node.pwds
+    dest: /tmp/node.pwds
+
+- name: Append miner info
+  lineinfile:
+    path: /tmp/node.toml
+    line: '{{ item }}'
+  with_items:
+    - '[account]'
+    - 'password = ["/tmp/node.pwds"]'
+    - '[mining]'
+    - 'engine_signer = "{{ new_account }}"'
+    - 'reseal_on_txs = "none"'
+
+- name: Restart parity docker
+  import_tasks: restart_parity_docker.yml

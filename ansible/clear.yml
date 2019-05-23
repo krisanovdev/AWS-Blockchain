@@ -1,0 +1,17 @@
+---
+- hosts: 'node_*'
+  tasks:
+    - name: Stop docker
+      docker_container:
+        name: parity
+        state: stopped
+      
+    - name: Clean artifacts
+      file:
+        state: absent
+        path: '{{ item }}'
+      with_items:
+        - /tmp/parity
+        - /tmp/node.toml
+        - /tmp/node.pwds
+        - /tmp/spec.json

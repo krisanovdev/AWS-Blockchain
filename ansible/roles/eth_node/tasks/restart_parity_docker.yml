@@ -1,0 +1,14 @@
+---
+- name: Start docker
+  docker_container:
+    image: parity/parity
+    name: parity
+    ports:
+      - "{{ node_port }}:{{ node_port }}"
+      - "{{ rpc_port }}:{{ rpc_port }}"
+    volumes:
+      - "/tmp:/tmp"
+    command:
+      - '--config=/tmp/node.toml'
+    restart: true
+    detach: true

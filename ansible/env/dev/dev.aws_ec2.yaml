@@ -3,5 +3,6 @@ regions:
   - us-west-2
 filters:
   tag:Environment: dev
-groups:
-  nodes: '"node" in tags.Name'
+keyed_groups:
+  - key: tags.Name
+    separator: ''

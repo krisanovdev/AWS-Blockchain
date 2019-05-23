@@ -1,0 +1,8 @@
+---
+- name: Create authority
+  import_tasks: create_authority.yml
+  when: is_authority
+
+- name: Create simple node
+  import_tasks: create_node.yml
+  when: not is_authority

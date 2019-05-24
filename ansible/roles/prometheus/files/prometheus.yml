@@ -1,0 +1,21 @@
+---
+global:
+  evaluation_interval: 30s
+
+scrape_configs:
+ - job_name: docker
+   ec2_sd_configs:
+    - region: us-west-2
+      port: 9323
+   relabel_configs:
+     - target_label: instance
+       regex: '(.+)'
+       source_labels: [__meta_ec2_tag_Name]
+
+     - target_label: environment
+       regex: '(.+)'
+       source_labels: [__meta_ec2_tag_Environment]
+
+     - target_label: az
+       regex: '(.+)'
+       source_labels: [__meta_ec2_availability_zone]

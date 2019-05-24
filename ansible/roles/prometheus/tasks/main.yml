@@ -1,0 +1,62 @@
+---
+- name: Create prometheus dirs
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 0770
+    group: docker
+  with_items:
+    - '{{ prometheus_dir }}'
+    - '{{ prometheus_dir }}/config'
+    - '{{ prometheus_dir }}/config/rules'
+    - '{{ prometheus_dir }}/config/data'
+
+- name: Copy prometheus.yml
+  copy:
+    src: prometheus.yml
+    dest: '{{ prometheus_dir }}/config/prometheus.yml'
+    mode: 0660
+    group: docker
+
+- name: Pull docker image
+  docker_image:
+    name: '{{ prometheus_image }}'
+    force: true
+
+- name: Check config
+  docker_container:
+    image: '{{ prometheus_image }}'
+    name: '{{ prometheus_container_name }}'
+    entrypoint: ''
+    user: 1000
+    command:
+      - promtool
+      - check
+      - config
+      - '{{ prometheus_dir }}/config/prometheus.yml'
+    detach: false
+    cleanup: true
+    volumes:
+      - '{{ prometheus_dir }}/config/:{{ prometheus_dir }}/config/'
+
+- name: Start container
+  docker_container:
+    image: '{{ prometheus_image }}'
+    name: '{{ prometheus_container_name }}'
+    detach: true
+    ports:
+      - '9090:9090'
+    command:
+      - '--config.file={{ prometheus_dir }}/config/prometheus.yml'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=90d'
+    volumes:
+      - '{{ prometheus_dir }}/config/:{{ prometheus_dir }}/config/'
+      - '{{ prometheus_dir }}:/prometheus'
+    restart: true
+    user: 1000
+    env:
+      AWS_ACCESS_KEY_ID: '{{ lookup("env", "AWS_ACCESS_KEY_ID") }}'
+      AWS_SECRET_ACCESS_KEY: '{{ lookup("env", "AWS_SECRET_ACCESS_KEY") }}'

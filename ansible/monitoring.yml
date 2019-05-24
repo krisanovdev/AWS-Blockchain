@@ -1,0 +1,4 @@
+- hosts: monitoring
+  tasks:
+    - import_role:
+        name: prometheus

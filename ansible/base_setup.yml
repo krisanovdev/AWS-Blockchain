@@ -23,6 +23,20 @@
     become: true
     shell: |
       sudo usermod -aG docker {{ ansible_ssh_user }}
+  
+  - name: Configure docker host
+    become: true
+    copy:
+      content: |
+        {
+          "metrics-addr" : "0.0.0.0:9323",
+          "experimental" : true,
+          "log-opts" : {
+            "max-size" : "1g"
+          }
+        }
+      dest: /etc/docker/daemon.json
+      mode: 0400
 
   - name: Reboot
     become: true

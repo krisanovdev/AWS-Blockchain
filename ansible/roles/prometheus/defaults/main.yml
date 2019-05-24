@@ -1,0 +1,6 @@
+---
+prometheus_dir: /tmp/prometheus
+prometheus_image_name: quay.io/prometheus/prometheus
+prometheus_image_tag: latest
+prometheus_image: '{{ prometheus_image_name }}:{{ prometheus_image_tag }}'
+prometheus_container_name: prometheus

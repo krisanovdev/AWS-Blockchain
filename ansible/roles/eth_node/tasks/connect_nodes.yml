@@ -1,1 +1,20 @@
 ---
+- name: Get own enode adress
+  command: "curl --data '{\"jsonrpc\":\"2.0\",\"method\":\"parity_enode\",\"params\":[],\"id\":0}' -H \"Content-Type: application/json\" -X POST localhost:{{ rpc_port }}"
+  register: responce
+
+- name: Get public ip
+  ipify_facts:
+  register: public_ip
+
+- name: Parse response
+  set_fact:
+    own_enode: '{{ (responce.stdout | from_json)["result"].split("@")[0] + "@" + public_ip.ansible_facts.ipify_public_ip + ":" + node_port | string }}'
+
+- name: Show enode
+  debug:
+    var: own_enode
+
+- name: Add peers
+  command: "curl --data '{\"jsonrpc\":\"2.0\",\"method\":\"parity_addReservedPeer\",\"params\":[{{ hostvars[groups['node_' + item ][0]].own_enode }}],\"id\":0}' -H \"Content-Type: application/json\" -X POST localhost:{{ rpc_port }}"
+  with_sequence: start=0 count=4

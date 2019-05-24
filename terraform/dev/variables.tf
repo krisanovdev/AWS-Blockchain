@@ -3,5 +3,5 @@ variable "aws_region" {
 }
 
 variable "nodes_count" {
-  default = 5
+  default = 4
 }

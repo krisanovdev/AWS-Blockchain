@@ -6,3 +6,6 @@
 - name: Create simple node
   import_tasks: create_node.yml
   when: not is_authority
+
+- name: Create simple node
+  import_tasks: connect_nodes.yml

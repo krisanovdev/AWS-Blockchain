@@ -16,10 +16,7 @@
   import_tasks: restart_parity_docker.yml
 
 - name: Create account
-  vars:
-    create_account_json: "{{ lookup('template', 'create_account_payload.json') | to_json }}"
-    command: "curl --data '{{ create_account_json }}' -H \"Content-Type: application/json\" -X POST localhost:{{ rpc_port }}"
-  command: '{{ command }}'
+  command: "curl --data '{\"jsonrpc\":\"2.0\",\"method\":\"parity_newAccountFromPhrase\",\"params\":[\"{{ account_passphrase }}\", \"{{ account_password }}\"],\"id\":0}' -H \"Content-Type: application/json\" -X POST localhost:{{ rpc_port }}"
   register: responce
 
 - name: Get address

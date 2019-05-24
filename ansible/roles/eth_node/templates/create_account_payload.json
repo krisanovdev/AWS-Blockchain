@@ -1,1 +1,0 @@
-{"jsonrpc":"2.0","method":"parity_newAccountFromPhrase","params":["{{ account_passphrase }}", "{{ account_password }}"],"id":0}

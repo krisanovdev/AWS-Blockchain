@@ -1,11 +1,11 @@
 ---
-- hosts: 'node_*'
+- hosts: all
   gather_facts: false
   pre_tasks:
     - name: install python 3
       raw: sudo apt-get -y install python3
   
-- hosts: 'node_*'
+- hosts: all
   tasks:
   - import_role:
       name: geerlingguy.docker

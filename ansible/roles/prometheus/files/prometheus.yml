@@ -7,7 +7,7 @@ scrape_configs:
    ec2_sd_configs:
     - region: us-west-2
       port: 9323
-   relabel_configs:
+   relabel_configs: &ec2_relabel_configs
      - target_label: instance
        regex: '(.+)'
        source_labels: [__meta_ec2_tag_Name]
@@ -19,3 +19,9 @@ scrape_configs:
      - target_label: az
        regex: '(.+)'
        source_labels: [__meta_ec2_availability_zone]
+
+ - job_name: cadvisor
+   ec2_sd_configs:
+    - region: us-west-2
+      port: 8080
+   relabel_configs: *ec2_relabel_configs

@@ -1,3 +1,4 @@
+---
 - hosts: monitoring
   tasks:
     - import_role:

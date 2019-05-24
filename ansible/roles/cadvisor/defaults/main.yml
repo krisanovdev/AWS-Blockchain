@@ -1,0 +1,5 @@
+---
+cadvisor_image_name: google/cadvisor
+cadvisor_image_tag: latest
+cadvisor_image: '{{ cadvisor_image_name }}:{{ cadvisor_image_tag }}'
+cadvisor_container_name: cadvisor

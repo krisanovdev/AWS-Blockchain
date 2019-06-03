@@ -1,0 +1,47 @@
+---
+- name: Create grafana dirs
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 0770
+    group: docker
+  with_items:
+    - '{{ grafana_dir }}/data'
+    - '{{ grafana_dir }}/provisioning/datasources'
+
+- name: Get my public IP from ipify.org
+  ipify_facts:
+  
+- name: Add Grafana config files
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    mode: 0660
+    group: docker
+  with_items:
+    - src: datasource.yml
+      dest: '{{ grafana_dir }}/provisioning/datasources/datasources.yml'
+
+- name: Pull image
+  docker_image:
+    name: '{{ grafana_image }}'
+    force: true
+
+- name: Start container
+  docker_container:
+    image: '{{ grafana_image }}'
+    name: '{{ grafana_container_name }}'
+    detach: true
+    ports:
+      - '3000:3000'
+    volumes:
+      - '{{ grafana_dir }}/data:/var/lib/grafana'
+      - '{{ grafana_dir }}/provisioning/datasources:/etc/grafana/provisioning/datasources'
+    restart: true
+    user: '1000'
+    healthcheck:
+      test: 'curl -f -s -i http://localhost:3000/api/health || exit 1'
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

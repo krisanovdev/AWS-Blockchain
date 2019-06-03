@@ -1,0 +1,6 @@
+---
+grafana_image_name: grafana/grafana
+grafana_image_tag: latest
+grafana_image: '{{ grafana_image_name }}:{{ grafana_image_tag }}'
+grafana_container_name: grafana
+grafana_dir: /tmp/grafana
